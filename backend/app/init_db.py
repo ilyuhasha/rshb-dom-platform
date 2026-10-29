@@ -1,6 +1,4 @@
 """Инициализация БД: создание таблиц и загрузка сид-данных."""
-import hashlib
-import hmac
 from datetime import datetime, timedelta
 
 from sqlalchemy import select
@@ -9,15 +7,8 @@ from .database import SessionLocal, engine, Base
 from .models import (
     User, Mortgage, SimScenario, NavScenario, LifeService,
 )
+from .routers.auth import hash_password, verify_password
 from .seed import SIM_SCENARIOS, NAV_SCENARIOS, LIFE_SERVICES, DEMO_USERS
-
-
-def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
-
-
-def verify_password(password: str, hashed: str) -> bool:
-    return hmac.compare_digest(hash_password(password), hashed)
 
 
 def init_db() -> None:

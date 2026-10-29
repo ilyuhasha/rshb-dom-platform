@@ -14,16 +14,18 @@ SCENARIO = {
         {"key": "prepay", "label": "Досрочный платёж", "unit": "₽", "type": "number", "default": 500000, "min": 0, "max": 100000000, "step": 50000},
     ],
     "formulas": [
+        {"key": "overpay_check", "label": "Проверка ввода", "expr": "if(prepay > balance, 1, 0)", "hidden": True},
         {"key": "months_before", "label": "Срок был", "expr": "months_to_repay(balance, rate, payment)", "unit": "мес."},
         {"key": "overpay_before", "label": "Проценты были бы", "expr": "payment * months_before - balance", "unit": "₽", "hidden": True},
-        {"key": "new_balance", "label": "Долг после взноса", "expr": "balance - prepay", "unit": "₽"},
-        {"key": "months_after", "label": "Срок стал (платёж тот же)", "expr": "months_to_repay(new_balance, rate, payment)", "unit": "мес."},
+        {"key": "new_balance", "label": "Долг после взноса", "expr": "if(prepay > balance, 0, balance - prepay)", "unit": "₽"},
+        {"key": "months_after", "label": "Срок стал (платёж тот же)", "expr": "if(prepay > balance, 0, months_to_repay(new_balance, rate, payment))", "unit": "мес."},
         {"key": "overpay_after", "label": "Проценты станут", "expr": "payment * months_after - new_balance", "unit": "₽", "hidden": True},
-        {"key": "saved_interest", "label": "Экономия на процентах", "expr": "overpay_before - overpay_after", "unit": "₽"},
-        {"key": "months_saved", "label": "Срок короче на", "expr": "months_before - months_after", "unit": "мес."},
+        {"key": "saved_interest", "label": "Экономия на процентах", "expr": "if(prepay > balance, 0, overpay_before - overpay_after)", "unit": "₽"},
+        {"key": "months_saved", "label": "Срок короче на", "expr": "if(prepay > balance, 0, months_before - months_after)", "unit": "мес."},
     ],
     "hints": [
         {"title": "Сокращайте срок, а не платёж", "text": "При одинаковой сумме взноса сокращение срока даёт большую экономию процентов, чем снижение платежа.", "condition": ""},
         {"title": "Вносите в дату платежа", "text": "Досрочный взнос в дату очередного платежа минимизирует проценты, начисленные за месяц.", "condition": ""},
+        {"title": "Взнос больше остатка долга", "text": "Досрочный взнос не может превышать остаток долга: банк примет только сумму долга, а не больше. Уменьшите взнос до остатка долга — ипотека закроется полностью.", "condition": "overpay_check > 0"},
     ],
 }

@@ -31,7 +31,11 @@ NAV_SCENARIOS = [
 
 LIFE_SERVICES = LIFE_1 + LIFE_2
 
-# Демо-пользователи: гость видит демо-данные, demo/demo — «банковский контур»
+# Демо-аккаунты трёх ролей:
+#   guest  — без входа (пароль не нужен), демо-данные
+#   demo/demo     — Пользователь: свой банковский контур, история расчётов
+#   admin/admin   — Администратор: управление сценариями, формулами,
+#                   параметрами и подсказками
 DEMO_USERS = [
     {"username": "demo", "password": "demo", "full_name": "Иванов Иван",
      "is_admin": False,
@@ -43,6 +47,16 @@ DEMO_USERS = [
          "monthly_payment": 61847, "paid_months": 18,
          "remaining_debt": 5030000,
      }},
-    {"username": "admin", "password": "admin", "full_name": "Администратор",
+    {"username": "user02", "password": "user02", "full_name": "Петрова Анна",
+     "is_admin": False,
+     "mortgage": {
+         "name": "Ипотека «Своё Жильё», дом",
+         "object_address": "Рязанская обл., с. Кузьмино, ул. Полевая, 7",
+         "object_type": "Частный дом",
+         "principal": 4300000, "rate": 6.0, "term_months": 240,
+         "monthly_payment": 30812, "paid_months": 10,
+         "remaining_debt": 4190000,
+     }},
+    {"username": "admin", "password": "admin", "full_name": "Администратор системы",
      "is_admin": True, "mortgage": None},
 ]

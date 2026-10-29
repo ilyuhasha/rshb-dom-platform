@@ -1,50 +1,18 @@
-"""API: «Жизнь после ипотеки» (Задача 3) + авторизация и контур клиента."""
-from datetime import datetime, timedelta
+"""API: «Жизнь после ипотеки» (Задача 3) + банковский контур клиента.
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+Авторизация — общая для всего приложения (см. routers/auth.py):
+гость видит демо-данные, пользователь — свой банковский контур.
+"""
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..init_db import verify_password
 from ..models import LifeService, LifeAction, Mortgage, User
+from .auth import get_current_user, require_user
 
 router = APIRouter(prefix="/api/life", tags=["life"])
-
-
-# ---------- Авторизация (демо: простой токен с временем жизни) ----------
-
-class LoginIn(BaseModel):
-    username: str
-    password: str
-
-
-_tokens: dict = {}  # демо-хранилище токенов в памяти процесса
-
-
-@router.post("/login")
-def login(data: LoginIn, db: Session = Depends(get_db)):
-    user = db.execute(
-        select(User).where(User.username == data.username)
-    ).scalar_one_or_none()
-    if not user or not verify_password(data.password, user.password_hash):
-        raise HTTPException(401, "Неверный логин или пароль")
-    token = f"tk-{user.id}-{int(datetime.utcnow().timestamp())}"
-    _tokens[token] = user.id
-    return {"token": token, "user": {
-        "id": user.id, "username": user.username,
-        "full_name": user.full_name, "is_admin": user.is_admin}}
-
-
-def current_user(request_header: str | None, db: Session) -> User | None:
-    if not request_header or not request_header.startswith("Bearer "):
-        return None
-    token = request_header[7:]
-    uid = _tokens.get(token)
-    if uid is None:
-        return None
-    return db.get(User, uid)
 
 
 # ---------- Каталог сервисов ----------
@@ -92,11 +60,10 @@ DEMO_MORTGAGE = {
 
 
 @router.get("/context")
-def get_context(authorization: str | None = Header(None),
-                db: Session = Depends(get_db)):
+def get_context(db: Session = Depends(get_db),
+                user: User | None = Depends(get_current_user)):
     """Гость получает демо-данные; авторизованный — свои кредиты из БД
     («банковский контур»)."""
-    user = current_user(authorization, db)
     if user:
         mortgages = db.execute(
             select(Mortgage).where(Mortgage.user_id == user.id)
@@ -132,11 +99,9 @@ class ActionIn(BaseModel):
 
 
 @router.post("/actions")
-def create_action(a: ActionIn, authorization: str | None = Header(None),
-                  db: Session = Depends(get_db)):
-    user = current_user(authorization, db)
-    if not user:
-        raise HTTPException(401, "Требуется вход (демо: demo/demo)")
+def create_action(a: ActionIn,
+                  db: Session = Depends(get_db),
+                  user: User = Depends(require_user)):
     db.add(LifeAction(user_id=user.id, service_key=a.service_key,
                       status=a.status, payload=a.payload))
     db.commit()
@@ -144,11 +109,8 @@ def create_action(a: ActionIn, authorization: str | None = Header(None),
 
 
 @router.get("/actions")
-def list_actions(authorization: str | None = Header(None),
-                 db: Session = Depends(get_db)):
-    user = current_user(authorization, db)
-    if not user:
-        raise HTTPException(401, "Требуется вход")
+def list_actions(db: Session = Depends(get_db),
+                 user: User = Depends(require_user)):
     rows = db.execute(
         select(LifeAction).where(LifeAction.user_id == user.id)
         .order_by(LifeAction.id.desc())

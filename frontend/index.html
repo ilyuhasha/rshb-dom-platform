@@ -5,81 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="РСХБ · Путь к своему дому — симулятор «Что, если…?», интерактивный навигатор и модуль «Жизнь после ипотеки»">
 <title>РСХБ · Путь к своему дому</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=PT+Sans:wght@400;700&family=PT+Mono&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   DESIGN TOKENS — двухуровневая система (primitives → semantic)
+   DESIGN DIRECTION: «Банковская выписка» (editorial / print)
+   Бумага + чернила + волосяные линейки, ноль скруглений и теней,
+   сериф для заголовков, моно для цифр. Основа: PT Serif / PT Sans /
+   PT Mono — петербургская публичная типографика (не Inter).
    ============================================================ */
 :root {
-  /* --- Green scale (brand) --- */
-  --g-50:  #F0F8F3;
-  --g-100: #E6F4EC;
-  --g-200: #CDE8D8;
-  --g-300: #A7D6BB;
-  --g-400: #6FBE93;
-  --g-500: #1E9E4A;   /* фирменный зелёный РСХБ */
-  --g-600: #12772F;   /* AA-safe для текста/кнопок */
-  --g-700: #0B4D21;
-  --g-800: #083A19;
-  --g-900: #062B13;
-  /* --- Neutral scale --- */
-  --n-0:   #FFFFFF;
-  --n-50:  #F7F9F8;
-  --n-100: #EFF2F0;
-  --n-200: #E2E7E4;
-  --n-300: #CBD3CE;
-  --n-400: #9FAAA4;
-  --n-500: #6E7B74;
-  --n-600: #52604F;
-  --n-700: #3B4739;
-  --n-800: #283127;
-  --n-900: #1A2118;
-  /* --- Accent (10% бюджета цвета по 60-30-10) --- */
-  --o-100: #FFF3EB;
-  --o-500: #E85D1F;
-  --o-600: #C44A15;
-  --o-700: #A63E10;
-  /* --- Danger --- */
-  --r-100: #FDECEA;
-  --r-600: #C5221F;
-  /* --- Semantic tokens: только они используются в компонентах --- */
-  --color-primary: var(--g-500);
-  --color-primary-strong: var(--g-600);
-  --color-primary-deep: var(--g-700);
-  --color-primary-soft: var(--g-100);
-  --color-bg: var(--n-50);
-  --color-surface: var(--n-0);
-  --color-surface-alt: var(--n-100);
-  --color-text: var(--n-900);
-  --color-text-body: var(--n-800);
-  --color-muted: var(--n-600);
-  --color-border: var(--n-200);
-  --color-border-strong: var(--n-300);
-  --color-accent: var(--o-500);
-  --color-accent-soft: var(--o-100);
-  --color-danger: var(--r-600);
-  --color-danger-soft: var(--r-100);
-  --color-onprimary: var(--n-0);
-  /* --- Spacing: 8px baseline --- */
+  /* Бумага и чернила */
+  --paper:      #F5F1E6;
+  --paper-2:    #EEE9DA;
+  --card:       #FBF8F0;
+  --ink:        #232B22;
+  --ink-soft:   #4A5448;
+  --ink-mute:   #5F6959;
+  --line:       #D8D1BF;
+  --line-strong:#B4AC97;
+  /* Фирменный зелёный РСХБ — только функциональный акцент */
+  --green:      #12772F;
+  --green-deep: #0B4D21;
+  --green-ink:  #E4EDD8;
+  --green-mid:  #1E9E4A;
+  /* Акцент/ошибки */
+  --accent:     #A63E10;
+  --accent-bg:  #F6E7DA;
+  --danger:     #8F1D1A;
+  --danger-bg:  #F3E0DC;
+  /* Шрифты */
+  --serif: 'PT Serif', Georgia, 'Times New Roman', serif;
+  --sans:  'PT Sans', 'Segoe UI', Tahoma, Arial, sans-serif;
+  --mono:  'PT Mono', Consolas, 'Courier New', monospace;
+  /* Интервалы: 8px базовая сетка */
   --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
   --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
-  /* --- Radii --- */
-  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-full: 999px;
-  /* --- Elevation: 3 уровня, одно направление --- */
-  --sh-1: 0 1px 2px rgba(8, 58, 25, .06), 0 1px 3px rgba(8, 58, 25, .07);
-  --sh-2: 0 2px 6px rgba(8, 58, 25, .07), 0 6px 16px rgba(8, 58, 25, .08);
-  --sh-3: 0 8px 24px rgba(8, 58, 25, .16), 0 2px 6px rgba(8, 58, 25, .08);
-  /* --- Typography scale (major third 1.25, fluid) --- */
-  --fs-xs:   clamp(.75rem,  .72rem + .15vw, .8125rem);
-  --fs-sm:   clamp(.8125rem,.78rem + .17vw, .875rem);
-  --fs-base: clamp(1rem,    .95rem + .25vw, 1.0625rem);
-  --fs-md:   clamp(1.0625rem,1rem + .3vw, 1.1875rem);
-  --fs-lg:   clamp(1.25rem, 1.15rem + .5vw, 1.5rem);
-  --fs-xl:   clamp(1.5rem,  1.3rem + 1vw,  2rem);
-  --fs-2xl:  clamp(1.75rem, 1.4rem + 1.75vw, 2.6rem);
-  --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --container: 1200px;
+  --container: 1160px;
 }
-/* ============================================================ */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
@@ -87,299 +51,414 @@ html { scroll-behavior: smooth; }
   html { scroll-behavior: auto; }
 }
 body {
-  font-family: var(--font-sans);
-  font-size: var(--fs-base);
-  line-height: 1.6;
-  background: var(--color-bg);
-  color: var(--color-text-body);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+  font-family: var(--sans);
+  font-size: 17px; line-height: 1.6;
+  background: var(--paper); color: var(--ink-soft);
+  min-height: 100vh; -webkit-font-smoothing: antialiased;
 }
-:focus-visible { outline: 3px solid var(--g-400); outline-offset: 2px; border-radius: var(--r-sm); }
+/* Зерно бумаги — едва заметная фактура печати */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 9990;
+  pointer-events: none; opacity: .05;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/></filter><rect width="180" height="180" filter="url(%23n)"/></svg>');
+}
+:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--serif); color: var(--ink); }
 
-/* ============ Шапка: тёмно-зелёная, 60-30-10, brand mark ============ */
+/* ============ Шапка: бумажный бланк с двойной линейкой ============ */
 header {
-  background:
-    radial-gradient(1200px 300px at 85% -80%, rgba(255,255,255,.14), transparent 60%),
-    linear-gradient(120deg, var(--g-900), var(--g-700) 55%, var(--g-600));
-  color: var(--color-onprimary);
+  background: var(--paper); color: var(--ink);
+  border-bottom: 1px solid var(--ink);
   padding: var(--sp-4) var(--sp-5);
   display: flex; align-items: center; justify-content: space-between;
   flex-wrap: wrap; gap: var(--sp-4);
+  position: relative;
+}
+header::after { /* двойная линия, как на бланке */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 3px;
+  border-bottom: 1px solid var(--ink);
 }
 .brand { display: flex; align-items: center; gap: var(--sp-3); min-width: 0; }
 .brand-mark {
   width: 44px; height: 44px; flex-shrink: 0;
-  background: linear-gradient(145deg, var(--g-500), var(--g-600));
-  border-radius: var(--r-md);
+  border: 1.5px solid var(--green-deep); color: var(--green-deep);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), var(--sh-1);
+  background: var(--card);
 }
-.brand-mark svg { width: 26px; height: 26px; }
+.brand-mark svg { width: 24px; height: 24px; }
 .brand h1 {
-  font-size: var(--fs-md); font-weight: 700; letter-spacing: -.01em;
-  line-height: 1.25; text-wrap: balance;
+  font-size: 1.35rem; font-weight: 700; line-height: 1.2;
 }
-.brand .sub { font-size: var(--fs-xs); opacity: .78; margin-top: 2px; letter-spacing: .01em; }
-.userbox { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-sm); flex-wrap: wrap; }
+.brand .sub {
+  font-family: var(--mono); font-size: .68rem; text-transform: uppercase;
+  letter-spacing: .09em; color: var(--ink-mute); margin-top: 3px;
+}
+.userbox { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
 .userbox input {
-  padding: 9px 12px; border-radius: var(--r-sm); border: 1px solid rgba(255,255,255,.35);
-  background: rgba(255,255,255,.12); color: var(--color-onprimary);
-  font-size: var(--fs-sm); width: 104px; font-family: inherit;
-  transition: border-color .15s, background .15s;
+  padding: 9px 10px; border: 1px solid var(--line-strong);
+  background: var(--card); color: var(--ink);
+  font-family: var(--mono); font-size: .8rem; width: 100px;
+  transition: border-color .15s;
+  border-radius: 0;
 }
-.userbox input::placeholder { color: rgba(255,255,255,.55); }
-.userbox input:focus { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.7); outline: none; }
-#who { font-size: var(--fs-xs); opacity: .85; margin-left: var(--sp-1); }
+.userbox input::placeholder { color: var(--ink-mute); }
+.userbox input:focus { border-color: var(--green); outline: none; }
+#who { font-family: var(--mono); font-size: .7rem; color: var(--ink-mute); margin-left: var(--sp-1); }
 
-/* ============ Навигация: sticky, ≤64px, role=tablist ============ */
+/* ============ Разделы: номера как в оглавлении ============ */
 nav.tabs {
-  display: flex; background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  display: flex; background: var(--paper);
+  border-bottom: 1px solid var(--line-strong);
   padding: 0 var(--sp-4); overflow-x: auto;
   position: sticky; top: 0; z-index: 50;
-  box-shadow: var(--sh-1);
   scrollbar-width: thin;
 }
 nav.tabs button {
-  background: none; border: none; padding: 0 var(--sp-4);
-  height: 56px; font-size: var(--fs-sm); cursor: pointer;
-  color: var(--color-muted); border-bottom: 3px solid transparent;
-  white-space: nowrap; font-weight: 600; font-family: inherit;
+  background: none; border: none; padding: 0 var(--sp-5);
+  height: 54px; font-size: .85rem; cursor: pointer;
+  color: var(--ink-mute); border-bottom: 3px solid transparent;
+  white-space: nowrap; font-weight: 700; font-family: var(--sans);
+  text-transform: uppercase; letter-spacing: .05em;
   display: inline-flex; align-items: center; gap: var(--sp-2);
   transition: color .15s, border-color .15s;
 }
 nav.tabs button .t-ic {
-  width: 30px; height: 30px; border-radius: var(--r-sm);
-  display: inline-flex; align-items: center; justify-content: center;
-  background: var(--color-surface-alt); font-size: 15px;
-  transition: background .15s;
+  font-family: var(--mono); font-size: .72rem; font-weight: 400;
+  color: var(--ink-mute); letter-spacing: 0;
 }
-nav.tabs button.active { color: var(--g-700); border-bottom-color: var(--color-primary); }
-nav.tabs button.active .t-ic { background: var(--g-100); }
-nav.tabs button:hover { color: var(--g-700); }
+nav.tabs button.active { color: var(--green-deep); border-bottom-color: var(--green); }
+nav.tabs button.active .t-ic { color: var(--green); }
+nav.tabs button:hover { color: var(--green-deep); }
 
 /* ============ Layout ============ */
 main { max-width: var(--container); margin: 0 auto; padding: var(--sp-6) var(--sp-4) var(--sp-8); }
 @media (min-width: 768px) { main { padding: var(--sp-7) var(--sp-5) 96px; } }
 
-/* ============ Карточки ============ */
+/* ============ Карточки: линейка вместо тени ============ */
 .card {
-  background: var(--color-surface); border-radius: var(--r-lg);
-  padding: var(--sp-5); box-shadow: var(--sh-1);
-  margin-bottom: var(--sp-5); border: 1px solid var(--color-border);
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 0; padding: var(--sp-5);
+  margin-bottom: var(--sp-5);
 }
 @media (min-width: 768px) { .card { padding: var(--sp-6); } }
-.card h2 { font-size: var(--fs-lg); font-weight: 700; margin-bottom: var(--sp-1); color: var(--color-text); letter-spacing: -.01em; line-height: 1.3; }
-.card > .desc { color: var(--color-muted); font-size: var(--fs-sm); margin-bottom: var(--sp-5); line-height: 1.6; max-width: 65ch; }
+.card h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: var(--sp-1); line-height: 1.25; }
+.card > .desc { color: var(--ink-mute); font-size: .9rem; margin-bottom: var(--sp-5); line-height: 1.6; max-width: 65ch; }
 .eyebrow {
-  font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase;
-  letter-spacing: .08em; color: var(--g-600); margin-bottom: var(--sp-1);
+  font-family: var(--mono); font-size: .7rem; font-weight: 400;
+  text-transform: uppercase; letter-spacing: .12em;
+  color: var(--green); margin-bottom: var(--sp-2);
 }
+.eyebrow::before { content: "— "; color: var(--line-strong); }
 .grid { display: grid; gap: var(--sp-4); }
 .grid-2 { grid-template-columns: 1fr; }
 .grid-3 { grid-template-columns: 1fr; }
 @media (min-width: 640px) { .grid-2, .grid-3 { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1024px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
 
-/* ============ Кнопки: все состояния, 44px touch-target ============ */
+/* ============ Кнопки: типографские, без капсул ============ */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
-  background: var(--color-primary-strong); color: var(--color-onprimary);
-  border: 1px solid transparent; min-height: 44px; padding: 10px 22px;
-  border-radius: var(--r-sm); font-size: var(--fs-sm); font-weight: 600;
-  cursor: pointer; font-family: inherit; letter-spacing: .01em;
-  transition: background .15s, box-shadow .15s, transform .1s;
-  box-shadow: var(--sh-1);
+  background: var(--green-deep); color: #F7F4EA;
+  border: 1px solid var(--green-deep); min-height: 44px; padding: 10px 22px;
+  border-radius: 0; font-size: .78rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .07em;
+  cursor: pointer; font-family: var(--sans);
+  transition: background .15s, color .15s;
 }
-.btn:hover { background: var(--g-700); box-shadow: var(--sh-2); }
-.btn:active { transform: translateY(1px); box-shadow: none; }
-.btn:disabled { background: var(--n-300); color: var(--n-500); cursor: not-allowed; box-shadow: none; transform: none; }
+.btn:hover { background: #063817; }
+.btn:active { background: var(--ink); border-color: var(--ink); }
+.btn:disabled { background: var(--line); border-color: var(--line); color: var(--ink-mute); cursor: not-allowed; }
 .btn.secondary {
-  background: var(--g-50); color: var(--g-700); border-color: var(--g-200); box-shadow: none;
+  background: transparent; color: var(--ink); border-color: var(--ink);
 }
-.btn.secondary:hover { background: var(--g-100); border-color: var(--g-300); box-shadow: var(--sh-1); }
-.btn.danger { background: var(--color-danger-soft); color: var(--color-danger); box-shadow: none; }
-.btn.danger:hover { background: #FBDBD8; }
-.btn.small { min-height: 36px; padding: 6px 14px; font-size: var(--fs-xs); }
+.btn.secondary:hover { background: var(--ink); color: var(--paper); }
+.btn.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+.btn.danger:hover { background: var(--danger); color: var(--paper); }
+.btn.small { min-height: 36px; padding: 6px 14px; font-size: .7rem; }
 
 /* ============ Формы ============ */
-label.f { display: block; font-size: var(--fs-xs); color: var(--n-600); margin: var(--sp-4) 0 var(--sp-1); font-weight: 600; letter-spacing: .02em; }
+label.f {
+  display: block; font-family: var(--mono); font-size: .72rem;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--ink-soft); margin: var(--sp-4) 0 var(--sp-1);
+}
 select, input[type=number] {
   width: 100%; min-height: 44px; padding: 10px 12px;
-  border: 1.5px solid var(--color-border-strong); border-radius: var(--r-sm);
-  font-size: var(--fs-base); background: var(--color-surface);
-  color: var(--color-text); font-family: inherit;
-  transition: border-color .15s, box-shadow .15s;
+  border: 1px solid var(--line-strong); border-radius: 0;
+  font-size: 1rem; font-family: var(--mono);
+  background: #FEFCF6; color: var(--ink);
+  transition: border-color .15s;
 }
-select:hover, input[type=number]:hover { border-color: var(--n-400); }
-select:focus, input[type=number]:focus {
-  border-color: var(--color-primary-strong); outline: none;
-  box-shadow: 0 0 0 3px var(--g-100);
-}
+select:hover, input[type=number]:hover { border-color: var(--ink-mute); }
+select:focus, input[type=number]:focus { border-color: var(--green); outline: none; }
 
-/* ============ Результаты расчётов ============ */
+/* ============ Результаты: строка выписки с отточием ============ */
 .result-row {
   display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-3);
-  padding: 12px 14px; border-bottom: 1px solid var(--color-border);
-  font-size: var(--fs-sm);
+  padding: 11px 2px; border-bottom: 1px dotted var(--line-strong);
+  font-size: .9rem;
 }
 .result-row:last-child { border-bottom: none; }
 .result-row .val {
-  font-weight: 700; color: var(--g-700); font-variant-numeric: tabular-nums;
-  font-size: var(--fs-md); white-space: nowrap;
+  font-family: var(--mono); font-weight: 700; color: var(--green-deep);
+  font-variant-numeric: tabular-nums; font-size: 1rem; white-space: nowrap;
 }
-.result-row.hl { background: var(--g-50); border-radius: var(--r-sm); border-bottom-color: transparent; margin-bottom: 2px; }
-.result-row.err { color: var(--color-danger); font-size: var(--fs-xs); }
+.result-row.hl { background: var(--green-ink); padding-left: var(--sp-3); padding-right: var(--sp-3); border-bottom-style: solid; border-bottom-color: var(--line); }
+.result-row.hl .val { font-size: 1.1rem; }
+.result-row.err { color: var(--danger); font-size: .8rem; }
 
-/* ============ Подсказки ============ */
+/* ============ Подсказки: сноска внизу страницы ============ */
 .hint {
-  background: var(--color-accent-soft);
-  border-left: 4px solid var(--color-accent);
-  padding: var(--sp-3) var(--sp-4); border-radius: 0 var(--r-sm) var(--r-sm) 0;
-  margin-top: var(--sp-3); font-size: var(--fs-sm); line-height: 1.55;
+  background: transparent; border-top: 1px solid var(--line-strong);
+  padding: var(--sp-3) 0 0; margin-top: var(--sp-4);
+  font-size: .85rem; line-height: 1.6;
 }
-.hint b { display: block; margin-bottom: 2px; color: var(--o-700); }
+.hint b {
+  display: block; margin-bottom: 2px; color: var(--ink);
+  font-family: var(--mono); font-size: .7rem; text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.hint b::before { content: "※ "; color: var(--green); }
 
 /* ============ Бейджи ============ */
 .badge {
-  display: inline-flex; align-items: center; background: var(--g-50); color: var(--g-700);
-  padding: 3px 10px; border-radius: var(--r-full); font-size: var(--fs-xs);
-  font-weight: 600; border: 1px solid var(--g-200);
+  display: inline-flex; align-items: center; background: transparent;
+  color: var(--ink-soft); padding: 3px 8px; border-radius: 0;
+  font-family: var(--mono); font-size: .68rem;
+  border: 1px solid var(--line-strong); text-transform: uppercase; letter-spacing: .04em;
 }
 
-/* ============ Карточки сценариев ============ */
-.scen-card { cursor: pointer; transition: transform .16s, box-shadow .16s, border-color .16s; position: relative; margin-bottom: 0; }
-.scen-card:hover { transform: translateY(-3px); box-shadow: var(--sh-3); border-color: var(--g-300); }
-.scen-card:focus-within { outline: 3px solid var(--g-400); outline-offset: 2px; }
-.scen-card.sel { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--g-200), var(--sh-2); }
+/* ============ Карточки сценариев: каталожный указатель ============ */
+.scen-card { cursor: pointer; transition: border-color .15s, background .15s; position: relative; margin-bottom: 0; }
+.scen-card:hover { border-color: var(--green); background: #FEFCF6; }
+.scen-card:focus-within { outline: 2px solid var(--green); outline-offset: 2px; }
+.scen-card.sel { border-color: var(--green-deep); box-shadow: inset 0 0 0 1px var(--green-deep); }
 .scen-card .ic {
-  width: 48px; height: 48px; border-radius: var(--r-md);
-  background: linear-gradient(145deg, var(--g-50), var(--g-100));
-  border: 1px solid var(--g-200);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 26px; margin-bottom: var(--sp-3);
+  width: 40px; height: 40px; border: 1px solid var(--line-strong);
+  background: var(--paper); display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 1.15rem; color: var(--green-deep);
+  margin-bottom: var(--sp-3);
 }
-.scen-card h3 { font-size: var(--fs-md); font-weight: 700; margin-bottom: var(--sp-1); color: var(--color-text); line-height: 1.35; }
-.scen-card p { font-size: var(--fs-sm); color: var(--color-muted); line-height: 1.55; }
+.scen-card h3 { font-size: 1.15rem; margin-bottom: var(--sp-1); line-height: 1.3; }
+.scen-card p { font-size: .85rem; color: var(--ink-mute); line-height: 1.55; }
 
 /* ============ Прогресс ============ */
 .progressbar {
-  height: 10px; background: var(--color-surface-alt); border-radius: var(--r-full);
+  height: 6px; background: var(--paper-2); border-radius: 0;
+  border: 1px solid var(--line-strong);
   overflow: hidden; margin: var(--sp-3) 0 var(--sp-1);
-  box-shadow: inset 0 1px 2px rgba(8,58,25,.08);
 }
-.progressbar > div {
-  height: 100%; border-radius: var(--r-full);
-  background: linear-gradient(90deg, var(--g-500), var(--g-600));
-  transition: width .4s ease;
-}
+.progressbar > div { height: 100%; background: var(--green); transition: width .4s ease; }
 
-/* ============ Этапы навигатора ============ */
-.stage-flow { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin: var(--sp-4) 0 var(--sp-2); }
-.stage-pill {
-  padding: 8px 14px; min-height: 36px; display: inline-flex; align-items: center;
-  border-radius: var(--r-full); font-size: var(--fs-xs); font-weight: 600;
-  background: var(--color-surface-alt); color: var(--color-muted);
-  cursor: pointer; border: 1.5px solid transparent; font-family: inherit;
-  transition: background .15s, color .15s;
+/* ============ Этапы навигатора: оглавление журнала, не кнопки ============ */
+.stage-flow { margin: var(--sp-4) 0 var(--sp-2); border-top: 1px solid var(--line); }
+.stage-link {
+  display: flex; align-items: baseline; gap: var(--sp-3);
+  width: 100%; text-align: left; background: none; border: none;
+  border-bottom: 1px dotted var(--line-strong);
+  padding: 10px 4px; cursor: pointer; border-radius: 0;
+  font-family: var(--sans); font-size: .95rem; color: var(--ink-soft);
+  transition: color .12s, background .12s;
 }
-.stage-pill:hover { color: var(--g-700); background: var(--g-50); }
-.stage-pill.done { background: var(--g-50); color: var(--g-700); border-color: var(--g-200); }
-.stage-pill.active { background: var(--color-primary-strong); color: var(--color-onprimary); }
+.stage-link:hover { color: var(--green-deep); background: var(--paper); }
+.stage-link:focus-visible { outline: 2px solid var(--green); outline-offset: -2px; }
+.stage-link .num {
+  font-family: var(--mono); font-size: .72rem; color: var(--ink-mute);
+  width: 2ch; flex-shrink: 0;
+}
+.stage-link .name { flex-shrink: 0; max-width: 46%; }
+.stage-link .dots {
+  flex: 1; border-bottom: 1px dotted var(--line-strong);
+  transform: translateY(-4px); min-width: 16px;
+}
+.stage-link .cnt {
+  font-family: var(--mono); font-size: .72rem; color: var(--ink-mute);
+  white-space: nowrap;
+}
+.stage-link .arrow {
+  font-family: var(--mono); font-size: .72rem; color: var(--green);
+  opacity: 0; transition: opacity .12s;
+}
+.stage-link:hover .arrow { opacity: 1; }
+.stage-link.current { color: var(--green-deep); font-weight: 700; }
+.stage-link.current .num { color: var(--green); }
+.stage-link.all-done .cnt { color: var(--green-deep); }
+.stage-link.all-done .cnt::after { content: " ✓"; font-family: var(--sans); }
 
 /* ============ Чек-листы ============ */
 .checkitem {
   display: flex; gap: var(--sp-3); align-items: flex-start;
-  padding: var(--sp-3) var(--sp-1); border-bottom: 1px dashed var(--color-border);
-  font-size: var(--fs-sm); cursor: pointer; border-radius: var(--r-sm);
-  transition: background .12s; line-height: 1.5;
+  padding: var(--sp-3) var(--sp-1); border-bottom: 1px dotted var(--line-strong);
+  font-size: .9rem; cursor: pointer; transition: background .12s; line-height: 1.5;
 }
-.checkitem:hover { background: var(--n-50); }
+.checkitem:hover { background: var(--paper); }
 .checkitem:last-child { border-bottom: none; }
-.checkitem input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--color-primary-strong); flex-shrink: 0; }
-.checkitem.done span { text-decoration: line-through; color: var(--color-muted); }
+.checkitem input { margin-top: 4px; width: 16px; height: 16px; accent-color: var(--green); flex-shrink: 0; }
+.checkitem.done span { text-decoration: line-through; color: var(--ink-mute); }
 
 /* ============ Советы ============ */
-.tips { background: var(--g-50); border: 1px solid var(--g-200); border-radius: var(--r-md); padding: var(--sp-4); margin-top: var(--sp-4); }
-.tips li { margin: var(--sp-1) 0 var(--sp-1) 20px; font-size: var(--fs-sm); color: var(--g-800); line-height: 1.55; }
+.tips { background: transparent; border-left: 2px solid var(--green); padding: var(--sp-2) 0 var(--sp-2) var(--sp-4); margin-top: var(--sp-4); }
+.tips li { margin: var(--sp-1) 0 var(--sp-1) 18px; font-size: .85rem; color: var(--ink-soft); line-height: 1.55; }
+.tips-cap {
+  font-family: var(--mono); font-size: .7rem; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--green-deep);
+}
 
 /* ============ Сервисы ============ */
-.svc-card h3 { font-size: var(--fs-md); margin-bottom: var(--sp-2); }
+.svc-card h3 { font-size: 1.15rem; margin-bottom: var(--sp-2); }
 .svc-card .cat {
-  font-size: 11px; color: var(--g-600); text-transform: uppercase;
-  letter-spacing: .07em; margin-bottom: var(--sp-2); font-weight: 700;
+  font-family: var(--mono); font-size: .65rem; color: var(--green);
+  text-transform: uppercase; letter-spacing: .1em; margin-bottom: var(--sp-2);
 }
 .stepnum {
-  background: var(--color-primary-strong); color: var(--color-onprimary);
-  min-width: 28px; height: 28px; border-radius: 50%;
+  background: transparent; color: var(--green-deep);
+  border: 1px solid var(--green-deep); border-radius: 0;
+  min-width: 26px; height: 26px;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: var(--fs-xs); font-weight: 700; margin-right: var(--sp-3); flex-shrink: 0;
+  font-family: var(--mono); font-size: .75rem; margin-right: var(--sp-3); flex-shrink: 0;
 }
-.howto-item { display: flex; align-items: flex-start; margin: var(--sp-3) 0; font-size: var(--fs-sm); line-height: 1.55; }
-.docs-line { margin-top: var(--sp-3); font-size: var(--fs-xs); color: var(--color-muted); line-height: 1.55; }
+.howto-item { display: flex; align-items: flex-start; margin: var(--sp-3) 0; font-size: .88rem; line-height: 1.55; }
+.docs-line { margin-top: var(--sp-3); font-size: .75rem; color: var(--ink-mute); line-height: 1.55; font-family: var(--mono); }
 
-/* ============ Карточка ипотеки ============ */
+/* ============ Карточка ипотеки: печатный штамп ============ */
 .mortgage-card {
-  background:
-    radial-gradient(700px 260px at 90% -60%, rgba(255,255,255,.15), transparent 60%),
-    linear-gradient(120deg, var(--g-900), var(--g-700) 60%, var(--g-600));
-  color: var(--color-onprimary); border-radius: var(--r-lg);
-  padding: var(--sp-5); box-shadow: var(--sh-2);
+  background: var(--green-deep); color: #EFEBDC;
+  border: 1px solid #062B13; border-radius: 0;
+  padding: var(--sp-5);
 }
 @media (min-width: 768px) { .mortgage-card { padding: var(--sp-6); } }
-.mortgage-card .lbl { font-size: 11px; opacity: .72; text-transform: uppercase; letter-spacing: .07em; }
-.mortgage-card .big { font-size: var(--fs-2xl); font-weight: 700; margin: var(--sp-1) 0 var(--sp-4); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
-.mortgage-card .row { display: flex; gap: var(--sp-5); flex-wrap: wrap; font-size: var(--fs-sm); }
-.mortgage-card .row div { min-width: 120px; }
-.mortgage-card .row b { display: block; font-size: var(--fs-md); font-variant-numeric: tabular-nums; }
+.mortgage-card .lbl {
+  font-family: var(--mono); font-size: .65rem; opacity: .75;
+  text-transform: uppercase; letter-spacing: .09em;
+}
+.mortgage-card .big {
+  font-family: var(--mono); font-size: 2rem; font-weight: 700;
+  margin: var(--sp-1) 0 var(--sp-4); letter-spacing: -.01em;
+  font-variant-numeric: tabular-nums;
+}
+.mortgage-card .row { display: flex; gap: var(--sp-5); flex-wrap: wrap; font-size: .8rem; }
+.mortgage-card .row div { min-width: 110px; }
+.mortgage-card .row b { display: block; font-family: var(--mono); font-size: .95rem; margin-top: 2px; }
 .src-tag {
-  font-size: 11px; padding: 4px 12px; border-radius: var(--r-full);
-  background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.35);
-  letter-spacing: .03em; white-space: nowrap;
+  font-family: var(--mono); font-size: .65rem; padding: 4px 10px; border-radius: 0;
+  background: transparent; border: 1px solid rgba(239,235,220,.5);
+  letter-spacing: .06em; white-space: nowrap; text-transform: uppercase;
 }
 
-/* ============ Модальное окно: Esc + aria ============ */
+/* ============ Модальное окно ============ */
 .modal-bg {
-  display: none; position: fixed; inset: 0; background: rgba(6, 43, 19, .55);
+  display: none; position: fixed; inset: 0; background: rgba(35, 43, 34, .5);
   z-index: 100; align-items: center; justify-content: center; padding: var(--sp-4);
-  backdrop-filter: blur(2px);
 }
 .modal-bg.open { display: flex; }
 .modal {
-  background: var(--color-surface); border-radius: var(--r-lg);
+  background: var(--card); border: 1px solid var(--ink); border-radius: 0;
   padding: var(--sp-6); max-width: 680px; width: 100%;
-  max-height: 86vh; overflow-y: auto; box-shadow: var(--sh-3);
+  max-height: 86vh; overflow-y: auto;
+  box-shadow: 8px 8px 0 rgba(11, 77, 33, .18);
 }
-.modal h3 { color: var(--color-text); margin-bottom: var(--sp-4); font-size: var(--fs-lg); line-height: 1.3; }
+.modal h3 { margin-bottom: var(--sp-4); font-size: 1.45rem; line-height: 1.25; }
 
 /* ============ Таблица сравнения ============ */
-table.cmp { width: 100%; border-collapse: collapse; font-size: var(--fs-xs); }
-table.cmp th, table.cmp td { padding: 10px 12px; border: 1px solid var(--color-border); text-align: left; line-height: 1.45; }
-table.cmp th { background: var(--g-50); color: var(--g-800); }
-table.cmp td.uniq { background: var(--color-danger-soft); color: var(--color-danger); font-weight: 600; }
-table.cmp td.same { color: var(--color-muted); }
+table.cmp { width: 100%; border-collapse: collapse; font-size: .75rem; }
+table.cmp th, table.cmp td { padding: 9px 10px; border: 1px solid var(--line-strong); text-align: left; line-height: 1.45; }
+table.cmp th { background: var(--paper-2); font-family: var(--mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; color: var(--ink); }
+table.cmp td.uniq { background: var(--accent-bg); color: var(--accent); font-weight: 700; }
+table.cmp td.same { color: var(--ink-mute); }
 
 footer {
-  text-align: center; color: var(--color-muted); font-size: var(--fs-xs);
-  padding: var(--sp-7) var(--sp-4); border-top: 1px solid var(--color-border);
+  text-align: center; color: var(--ink-mute);
+  font-family: var(--mono); font-size: .68rem;
+  padding: var(--sp-7) var(--sp-4); border-top: 3px double var(--line-strong);
+  text-transform: uppercase; letter-spacing: .08em;
 }
 
 /* ============ Toast ============ */
 .toast {
-  position: fixed; bottom: var(--sp-5); right: var(--sp-5); left: auto;
-  background: var(--g-800); color: var(--color-onprimary);
-  padding: 13px 20px; border-radius: var(--r-md); font-size: var(--fs-sm);
-  box-shadow: var(--sh-3); opacity: 0; transform: translateY(8px);
+  position: fixed; bottom: var(--sp-5); left: var(--sp-5); right: auto;
+  background: var(--ink); color: var(--paper);
+  padding: 13px 20px; border-radius: 0; font-size: .82rem;
+  font-family: var(--mono); opacity: 0; transform: translateY(8px);
   transition: opacity .3s, transform .3s; z-index: 200;
-  max-width: min(90vw, 380px);
+  max-width: min(90vw, 380px); border-left: 3px solid var(--green-mid);
 }
 .toast.show { opacity: 1; transform: translateY(0); }
 
 .empty {
-  text-align: center; color: var(--color-muted); padding: var(--sp-7) 0;
-  font-size: var(--fs-sm);
+  text-align: center; color: var(--ink-mute); padding: var(--sp-7) 0;
+  font-size: .85rem; font-style: italic; font-family: var(--serif);
 }
+
+/* ---- Роль в шапке (Гость / Пользователь / Администратор) ---- */
+.role-chip {
+  font-family: var(--mono); font-size: .72rem; letter-spacing: .06em;
+  text-transform: uppercase;
+  border: 1px solid var(--ink); padding: 4px 10px;
+  background: transparent;
+}
+.role-chip[data-role="user"] { border-color: var(--green-mid); color: var(--green-mid); }
+.role-chip[data-role="admin"] {
+  background: var(--green-mid); border-color: var(--green-mid); color: #fff;
+}
+
+/* ---- Панель администратора ---- */
+.admin-row {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: var(--sp-3); padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--paper-line, #d8d2be);
+  flex-wrap: wrap;
+}
+.admin-row:last-child { border-bottom: none; }
+label { display: block; font-family: var(--mono); font-size: .72rem;
+  text-transform: uppercase; letter-spacing: .05em; color: var(--ink-mute);
+  margin-bottom: 4px; }
+input, textarea, select {
+  width: 100%; box-sizing: border-box;
+  font-family: var(--sans); font-size: .95rem; color: var(--ink);
+  background: var(--paper-card, #fff); border: 1px solid var(--ink);
+  padding: 8px 10px;
+}
+input:focus, textarea:focus { outline: 2px solid var(--green-mid); outline-offset: 1px; }
+textarea { font-family: var(--mono); font-size: .82rem; }
+.mono { font-family: var(--mono); font-size: .85em; }
+
+/* ============ Личный кабинет ============ */
+.lk-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  flex-wrap: wrap; gap: var(--sp-3);
+  border-bottom: 3px double var(--line-strong);
+  padding-bottom: var(--sp-4); margin-bottom: var(--sp-5);
+}
+.lk-header h2 { font-size: 1.8rem; }
+.lk-id { font-family: var(--mono); font-size: .72rem; color: var(--ink-mute); text-align: right; }
+.lk-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line-strong); border: 1px solid var(--line-strong); margin-bottom: var(--sp-5); }
+@media (min-width: 768px) { .lk-stats { grid-template-columns: repeat(4, 1fr); } }
+.lk-stat { background: var(--card); padding: var(--sp-4); }
+.lk-stat .v { font-family: var(--mono); font-size: 1.5rem; font-weight: 700; color: var(--green-deep); font-variant-numeric: tabular-nums; }
+.lk-stat .l { font-family: var(--mono); font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-mute); margin-top: 2px; }
+.lk-nav-row { display: flex; align-items: baseline; gap: var(--sp-3); padding: 10px 4px; border-bottom: 1px dotted var(--line-strong); }
+.lk-nav-row:last-child { border-bottom: none; }
+.lk-nav-row .name { flex-shrink: 0; max-width: 40%; }
+.lk-nav-row .bar { flex: 1; height: 4px; background: var(--paper-2); border: 1px solid var(--line); }
+.lk-nav-row .bar i { display: block; height: 100%; background: var(--green); }
+.lk-nav-row .pct { font-family: var(--mono); font-size: .78rem; color: var(--green-deep); white-space: nowrap; min-width: 4.5ch; text-align: right; }
+.lk-nav-row .go { font-family: var(--mono); font-size: .7rem; color: var(--green); white-space: nowrap; }
+.lk-nav-row .go:hover { text-decoration: underline; cursor: pointer; }
+.draft-row { display: flex; align-items: baseline; gap: var(--sp-3); padding: 10px 4px; border-bottom: 1px dotted var(--line-strong); font-size: .88rem; }
+.draft-row:last-child { border-bottom: none; }
+.draft-row .when { font-family: var(--mono); font-size: .7rem; color: var(--ink-mute); white-space: nowrap; flex-shrink: 0; }
+.draft-row .what { color: var(--ink); flex-shrink: 0; }
+.draft-row .sum { font-family: var(--mono); font-size: .78rem; color: var(--green-deep); white-space: nowrap; }
+.draft-row .x { margin-left: auto; font-family: var(--mono); font-size: .75rem; color: var(--danger); border: none; background: none; cursor: pointer; padding: 2px 6px; }
+.draft-row .x:hover { text-decoration: underline; }
+.draft-row .open { font-family: var(--mono); font-size: .72rem; color: var(--green); border: none; background: none; cursor: pointer; white-space: nowrap; }
+.draft-row .open:hover { text-decoration: underline; }
+.lk-done-note { text-align: center; padding: var(--sp-6) var(--sp-4); border: 1px solid var(--line-strong); background: var(--green-ink); margin-bottom: var(--sp-5); }
+.lk-done-note .t { font-family: var(--serif); font-size: 1.5rem; color: var(--green-deep); margin-bottom: var(--sp-2); }
+.lk-done-note .d { font-size: .85rem; color: var(--ink-soft); }
+.lk-empty-note { font-size: .85rem; color: var(--ink-mute); font-style: italic; font-family: var(--serif); padding: var(--sp-3) 0; }
+h3.lk-h { font-family: var(--mono); font-size: .75rem; font-weight: 400; text-transform: uppercase; letter-spacing: .12em; color: var(--ink-mute); margin: var(--sp-5) 0 var(--sp-2); }
+h3.lk-h::before { content: "— "; color: var(--green); }
 </style>
 </head>
 <body>
@@ -387,8 +466,8 @@ footer {
   <div class="brand">
     <div class="brand-mark" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 11.2 12 4l9 7.2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M5.5 10.5V19a1 1 0 0 0 1 1H10v-5h4v5h3.5a1 1 0 0 0 1-1v-8.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3 11.2 12 4l9 7.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5.5 10.5V19a1 1 0 0 0 1 1H10v-5h4v5h3.5a1 1 0 0 0 1-1v-8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
     <div>
@@ -397,19 +476,18 @@ footer {
     </div>
   </div>
   <div class="userbox" id="userbox">
-    <label for="login-user" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Логин</label>
-    <input id="login-user" placeholder="demo" value="demo" autocomplete="username">
-    <label for="login-pass" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Пароль</label>
-    <input id="login-pass" type="password" placeholder="demo" value="demo" autocomplete="current-password">
-    <button class="btn secondary small" onclick="doLogin()">Войти</button>
-    <span id="who">Гость · демо-данные</span>
+    <span class="role-chip" id="role-chip" data-role="guest">Гость · демо-данные</span>
+    <button class="btn secondary small" id="btn-login" onclick="openLogin()">Войти</button>
+    <button class="btn small" id="btn-logout" onclick="doLogout()" style="display:none">Выйти</button>
   </div>
 </header>
 
 <nav class="tabs" role="tablist" aria-label="Разделы сервиса">
-  <button id="tab-sim" class="active" role="tab" aria-selected="true" onclick="switchTab('sim')"><span class="t-ic" aria-hidden="true">📊</span>Что, если…?</button>
-  <button id="tab-nav" role="tab" aria-selected="false" onclick="switchTab('nav')"><span class="t-ic" aria-hidden="true">🧭</span>Путь к своему дому</button>
-  <button id="tab-life" role="tab" aria-selected="false" onclick="switchTab('life')"><span class="t-ic" aria-hidden="true">🏠</span>Жизнь после ипотеки</button>
+  <button id="tab-sim" class="active" role="tab" aria-selected="true" onclick="switchTab('sim')"><span class="t-ic" aria-hidden="true">01</span>Что, если…?</button>
+  <button id="tab-nav" role="tab" aria-selected="false" onclick="switchTab('nav')"><span class="t-ic" aria-hidden="true">02</span>Путь к своему дому</button>
+  <button id="tab-life" role="tab" aria-selected="false" onclick="switchTab('life')"><span class="t-ic" aria-hidden="true">03</span>Жизнь после ипотеки</button>
+  <button id="tab-profile" role="tab" aria-selected="false" onclick="switchTab('profile')" style="display:none"><span class="t-ic" aria-hidden="true">04</span>Кабинет</button>
+  <button id="tab-admin" role="tab" aria-selected="false" onclick="switchTab('admin')" style="display:none"><span class="t-ic" aria-hidden="true">A</span>Админ · сценарии</button>
 </nav>
 
 <main>
@@ -444,7 +522,7 @@ footer {
     <div class="desc">Пошаговый маршрут от выбора недвижимости до сделки и обустройства. Выберите сценарий — шаги адаптируются автоматически.</div>
     <div class="grid grid-3" id="nav-cards"></div>
     <div style="margin-top:var(--sp-4)">
-      <button class="btn secondary" onclick="openCompare()">⚖ Сравнить сценарии</button>
+      <button class="btn secondary" onclick="openCompare()">Сравнить сценарии</button>
     </div>
   </div>
   <div id="nav-work" style="display:none">
@@ -454,7 +532,7 @@ footer {
       <div class="progressbar" role="progressbar" aria-labelledby="nav-progress-text"><div id="nav-progress" style="width:0%"></div></div>
       <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--color-muted)">
         <span id="nav-progress-text">0 из 0</span>
-        <a href="#" onclick="resetProgress();return false" style="color:var(--color-danger)">Сбросить прогресс</a>
+        <a href="#" onclick="resetProgress();return false" style="color:var(--danger)">Сбросить прогресс</a>
       </div>
       <div class="stage-flow" id="nav-stages"></div>
     </div>
@@ -466,6 +544,7 @@ footer {
       <div style="display:flex;gap:var(--sp-2);margin-top:var(--sp-5);flex-wrap:wrap">
         <button class="btn secondary" id="nav-prev" onclick="navGo(-1)">← Назад</button>
         <button class="btn" id="nav-next" onclick="navGo(1)">Далее →</button>
+        <button class="btn" id="nav-finish" onclick="finishNav()" style="display:none">Завершить ✓</button>
       </div>
     </div>
   </div>
@@ -479,6 +558,48 @@ footer {
     <h2>Жизнь после ипотеки: сервисы и действия</h2>
     <div class="desc">Что можно делать с ипотекой после оформления: досрочное погашение, вычеты, справки, страхование. Гость работает с демо-данными, авторизованный пользователь — со своим кредитом.</div>
     <div class="grid grid-3" id="life-cards"></div>
+  </div>
+</section>
+<!-- ================= PROFILE (личный кабинет) ================= -->
+<section id="view-profile" style="display:none" aria-label="Личный кабинет">
+  <div class="card">
+    <div class="lk-header">
+      <div>
+        <div class="eyebrow">Личный кабинет</div>
+        <h2 id="lk-name"></h2>
+      </div>
+      <div class="lk-id" id="lk-meta"></div>
+    </div>
+    <div class="lk-stats" id="lk-stats"></div>
+    <div id="lk-finish-note"></div>
+
+    <h3 class="lk-h">Прогресс по маршрутам · таск-трекер</h3>
+    <div id="lk-nav"></div>
+
+    <h3 class="lk-h">Черновики расчётов</h3>
+    <div id="lk-calcs" style="display:flex;justify-content:space-between;align-items:baseline;gap:var(--sp-3)">
+      <span id="lk-calcs-list"></span>
+      <button class="btn danger small" id="lk-clear" onclick="lkClearCalcs()" style="display:none">Очистить все</button>
+    </div>
+
+    <h3 class="lk-h">Мои ипотеки · банковский контур</h3>
+    <div id="lk-mortgages"></div>
+
+    <h3 class="lk-h">Планы по сервисам «Жизнь после ипотеки»</h3>
+    <div id="lk-actions"></div>
+  </div>
+</section>
+<!-- ================= ADMIN ================= -->
+<section id="view-admin" style="display:none" aria-label="Панель администратора">
+  <div class="card">
+    <div class="eyebrow">Администрирование · задача 1</div>
+    <h2>Сценарии, формулы, параметры, подсказки</h2>
+    <div class="desc">Добавляйте новые сценарии симулятора без изменения кода: параметры, формулы и условные подсказки сохраняются в базе данных и сразу доступны всем пользователям. Формулы записываются математическим выражением, например <span class="mono">annuity(sum, rate/100/12, years*12)</span>.</div>
+    <div style="display:flex;gap:var(--sp-2);margin-top:var(--sp-4);flex-wrap:wrap">
+      <button class="btn" onclick="adminNewScenario()">+ Новый сценарий</button>
+      <button class="btn secondary" onclick="loadAdminList()">Обновить список</button>
+    </div>
+    <div id="admin-list" style="margin-top:var(--sp-5)"></div>
   </div>
 </section>
 </main>
@@ -500,6 +621,11 @@ const fmt = v => v == null ? '—' :
   Math.abs(v) >= 1000000 && v % 1 === 0 ? v.toLocaleString('ru-RU') :
   v.toLocaleString('ru-RU', {maximumFractionDigits: 2});
 
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'
+  }[c]));
+}
 function toast(msg) {
   let t = document.createElement('div');
   t.className = 'toast'; t.textContent = msg; t.setAttribute('role', 'status');
@@ -520,10 +646,13 @@ async function api(path, opts = {}) {
   return r.json();
 }
 
+const TABS = ['sim','nav','life','profile','admin'];
 function switchTab(tab) {
-  ['sim','nav','life'].forEach(t => {
-    document.getElementById('view-' + t).style.display = t === tab ? '' : 'none';
+  TABS.forEach(t => {
+    const view = document.getElementById('view-' + t);
     const btn = document.getElementById('tab-' + t);
+    if (!view || !btn) return;
+    view.style.display = t === tab ? '' : 'none';
     btn.classList.toggle('active', t === tab);
     btn.setAttribute('aria-selected', t === tab ? 'true' : 'false');
   });
@@ -536,11 +665,11 @@ async function loadSim() {
 }
 
 function renderSimCards() {
-  document.getElementById('sim-cards').innerHTML = simScenarios.map(s => `
+  document.getElementById('sim-cards').innerHTML = simScenarios.map((s, i) => `
     <div class="card scen-card" tabindex="0" role="button"
       onclick="selectSim('${s.key}')"
       onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectSim('${s.key}')}">
-      <div class="ic" aria-hidden="true">${s.icon}</div>
+      <div class="ic" aria-hidden="true">${String(i + 1).padStart(2, '0')}</div>
       <h3>${s.title}</h3>
       <p>${s.description}</p>
       <div style="margin-top:var(--sp-3)"><span class="badge">${s.category}</span></div>
@@ -552,7 +681,7 @@ async function selectSim(key) {
   document.querySelectorAll('#sim-cards .scen-card').forEach((el, i) =>
     el.classList.toggle('sel', simScenarios[i] && simScenarios[i].key === key));
   document.getElementById('sim-work').style.display = '';
-  document.getElementById('sim-title').textContent = currentSim.icon + ' ' + currentSim.title;
+  document.getElementById('sim-title').textContent = currentSim.title;
   document.getElementById('sim-desc').textContent = currentSim.description;
   document.getElementById('sim-params').innerHTML = currentSim.params_schema.map(p => `
     <label class="f" for="p-${p.key}">${p.label}${p.unit ? ', ' + p.unit : ''}</label>
@@ -572,7 +701,7 @@ async function runCalc() {
     body: JSON.stringify({scenario_key: currentSim.key, inputs})
   });
   const rows = out.results.filter(r => !r.hidden).map(r => {
-    if (r.error) return `<div class="result-row err">⚠ ${r.label}: ошибка формулы</div>`;
+    if (r.error) return `<div class="result-row err">${esc(r.label)} — ${esc(r.error)}</div>`;
     const hl = ['payment','saved_interest','month_saved','cashflow','dti','total_saved'].includes(r.key);
     return `<div class="result-row ${hl ? 'hl' : ''}">
       <span>${r.label}${r.unit ? ' <span style="color:var(--color-muted);font-size:11px">(' + r.unit + ')</span>' : ''}</span>
@@ -580,7 +709,7 @@ async function runCalc() {
   }).join('');
   document.getElementById('sim-results').innerHTML = rows || '<div class="empty">Нет результатов</div>';
   document.getElementById('sim-hints').innerHTML = (out.hints || []).map(h =>
-    `<div class="hint"><b>💡 ${h.title}</b>${h.text}</div>`).join('');
+    `<div class="hint"><b>${h.title}</b>${h.text}</div>`).join('');
 }
 
 // ================= NAVIGATOR =================
@@ -590,11 +719,11 @@ async function loadNav() {
 }
 
 function renderNavCards() {
-  document.getElementById('nav-cards').innerHTML = navScenarios.map(s => `
+  document.getElementById('nav-cards').innerHTML = navScenarios.map((s, i) => `
     <div class="card scen-card" tabindex="0" role="button"
       onclick="selectNav('${s.key}')"
       onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectNav('${s.key}')}">
-      <div class="ic" aria-hidden="true">${s.icon}</div>
+      <div class="ic" aria-hidden="true">${String(i + 1).padStart(2, '0')}</div>
       <h3>${s.title}</h3>
       <p>${s.short}</p>
       <div style="margin-top:var(--sp-3);display:flex;gap:6px;flex-wrap:wrap">
@@ -609,23 +738,35 @@ async function selectNav(key) {
   document.querySelectorAll('#nav-cards .scen-card').forEach((el, i) =>
     el.classList.toggle('sel', navScenarios[i] && navScenarios[i].key === key));
   document.getElementById('nav-work').style.display = '';
-  document.getElementById('nav-title').textContent = currentNav.icon + ' ' + currentNav.title;
+  document.getElementById('nav-title').textContent = currentNav.title;
   document.getElementById('nav-desc').textContent = currentNav.description;
   const pr = await api('/api/nav/progress/' + key);
   navProgress = {};
   pr.forEach(p => { if (p.done) navProgress[p.step_key + ':' + p.item_index] = true; });
   navStepIdx = 0;
   renderNavStep();
+  // Автопрокрутка к работе с маршрутом: экран сразу уходит вниз
+  document.getElementById('nav-work').scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 
 function renderNavStep() {
   const steps = currentNav.steps;
   const step = steps[navStepIdx];
-  document.getElementById('nav-stages').innerHTML = steps.map((s, i) =>
-    `<span class="stage-pill ${i === navStepIdx ? 'active' : (i < navStepIdx ? 'done' : '')}"
-      role="button" tabindex="0"
-      onclick="navStepIdx=${i};renderNavStep()"
-      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();navStepIdx=${i};renderNavStep()}">${s.stage}</span>`).join('');
+  // Этапы — оглавление журнала: номер, название, отточие, счётчик
+  document.getElementById('nav-stages').innerHTML = steps.map((s, i) => {
+    const items = (s.checklist || []).length;
+    const doneCnt = (s.checklist || []).filter((c, j) => navProgress[s.key + ':' + j]).length;
+    const allDone = items > 0 && doneCnt === items;
+    return `<button type="button" class="stage-link ${i === navStepIdx ? 'current' : ''} ${allDone ? 'all-done' : ''}"
+      onclick="navStepIdx=${i};renderNavStep();scrollToStep()"
+      title="Перейти к этапу: ${s.stage}">
+      <span class="num" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
+      <span class="name">${s.stage}</span>
+      <span class="dots" aria-hidden="true"></span>
+      <span class="cnt">${doneCnt}/${items}</span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </button>`;
+  }).join('');
   document.getElementById('nav-step-title').innerHTML =
     `<span class="stepnum" aria-hidden="true">${navStepIdx + 1}</span>${step.title}`;
   document.getElementById('nav-step-summary').textContent = step.summary || '';
@@ -636,15 +777,42 @@ function renderNavStep() {
       <span>${c}</span></label>`;
   }).join('');
   document.getElementById('nav-tips').innerHTML = (step.tips && step.tips.length)
-    ? '<b style="font-size:var(--fs-xs)">💡 Советы</b><ul>' + step.tips.map(t => `<li>${t}</li>`).join('') + '</ul>'
+    ? '<b class="tips-cap">Советы</b><ul>' + step.tips.map(t => `<li>${t}</li>`).join('') + '</ul>'
     : '';
   document.getElementById('nav-prev').style.visibility = navStepIdx === 0 ? 'hidden' : '';
   document.getElementById('nav-next').style.visibility = navStepIdx === steps.length - 1 ? 'hidden' : '';
+  // На последнем этапе показываем «Завершить», на остальных — «Далее»
+  document.getElementById('nav-finish').style.display =
+    navStepIdx === steps.length - 1 ? '' : 'none';
   const total = steps.reduce((a, s) => a + (s.checklist || []).length, 0);
   const done = Object.keys(navProgress).length;
   const pct = total ? Math.round(done / total * 100) : 0;
   document.getElementById('nav-progress').style.width = pct + '%';
   document.getElementById('nav-progress-text').textContent = `${done} из ${total} · ${pct}%`;
+}
+
+function scrollToStep() {
+  document.getElementById('nav-step-card').scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+async function finishNav() {
+  const steps = currentNav.steps;
+  const total = steps.reduce((a, s) => a + (s.checklist || []).length, 0);
+  const done = Object.keys(navProgress).length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  if (!currentUser) {
+    toast('Войдите, чтобы сохранить результат в личный кабинет (demo/demo)');
+    openLogin();
+    return;
+  }
+  if (pct < 100) {
+    if (!confirm(`Выполнено ${done} из ${total} пунктов (${pct}%).\nЗавершить маршрут и сохранить результат в кабинет?`)) return;
+  }
+  sessionStorage.setItem('lk_finish_note', JSON.stringify({
+    title: currentNav.title, done, total, pct
+  }));
+  switchTab('profile');
+  await loadProfile();
 }
 
 async function toggleItem(stepKey, idx, done) {
@@ -675,10 +843,10 @@ async function openCompare() {
   const keys = navScenarios.map(s => s.key);
   const datas = await Promise.all(keys.map(k => api('/api/nav/scenarios/' + k)));
   const stageOrder = ['Выбор','Финансы','Проверка','Сделка','Регистрация','Обустройство'];
-  let html = '<h3>⚖ Сравнение сценариев: как меняются шаги</h3>';
+  let html = '<h3>Сравнение сценариев: как меняются шаги</h3>';
   html += '<div style="font-size:var(--fs-xs);color:var(--color-muted);margin-bottom:var(--sp-3)">Красным выделены шаги, уникальные для сценария (отсутствуют у большинства других).</div>';
   html += '<div style="overflow-x:auto"><table class="cmp"><tr><th>Этап</th>' +
-    datas.map(d => `<th>${d.icon}<br>${d.title}</th>`).join('') + '</tr>';
+    datas.map(d => `<th>${d.title}</th>`).join('') + '</tr>';
   stageOrder.forEach(st => {
     html += `<tr><th>${st}</th>`;
     datas.forEach(d => {
@@ -721,11 +889,11 @@ function renderContext(ctx) {
 }
 
 function renderLifeCards() {
-  document.getElementById('life-cards').innerHTML = lifeServices.map(s => `
+  document.getElementById('life-cards').innerHTML = lifeServices.map((s, i) => `
     <div class="card scen-card svc-card" tabindex="0" role="button"
       onclick="openService('${s.key}')"
       onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openService('${s.key}')}">
-      <div class="ic" aria-hidden="true">${s.icon}</div>
+      <div class="ic" aria-hidden="true">${String(i + 1).padStart(2, '0')}</div>
       <div class="cat">${s.category}</div>
       <h3>${s.title}</h3>
       <p>${s.description}</p>
@@ -734,17 +902,17 @@ function renderLifeCards() {
 
 async function openService(key) {
   const s = await api('/api/life/services/' + key);
-  let html = `<h3>${s.icon} ${s.title}</h3>
+  let html = `<h3>${s.title}</h3>
     <p style="color:var(--color-muted);font-size:var(--fs-sm);margin-bottom:var(--sp-4)">${s.description}</p>
     <b>Как сделать:</b>`;
   html += s.how_to.map((h, i) => `<div class="howto-item"><span class="stepnum" aria-hidden="true">${i + 1}</span><span>${h}</span></div>`).join('');
   if (s.docs && s.docs.length)
-    html += `<div class="docs-line">📄 Документы: ${s.docs.join(' · ')}</div>`;
-  html += (s.hints || []).map(h => `<div class="hint"><b>💡 ${h.title}</b>${h.text}</div>`).join('');
+    html += `<div class="docs-line">Документы: ${s.docs.join(' · ')}</div>`;
+  html += (s.hints || []).map(h => `<div class="hint"><b>${h.title}</b>${h.text}</div>`).join('');
   if (s.calculator)
-    html += `<div style="margin-top:var(--sp-4)"><button class="btn" onclick="closeModal();switchTab('sim');selectSim('${s.calculator}')">📊 Открыть в симуляторе</button></div>`;
+    html += `<div style="margin-top:var(--sp-4)"><button class="btn" onclick="closeModal();switchTab('sim');selectSim('${s.calculator}')">Открыть в симуляторе</button></div>`;
   html += `<div style="margin-top:var(--sp-4);display:flex;gap:var(--sp-2);flex-wrap:wrap">
-    <button class="btn" onclick="planService('${s.key}')">＋ Запланировать</button>
+    <button class="btn" onclick="planService('${s.key}')">Запланировать</button>
     <button class="btn secondary" onclick="closeModal()">Закрыть</button></div>`;
   openModal(html);
 }
@@ -762,23 +930,400 @@ async function planService(key) {
   }
 }
 
-// ================= AUTH =================
+// ================= AUTH: роли Гость / Пользователь / Администратор =================
+let currentUser = null; // {id, username, full_name, role, role_title}
+
+function applyRole() {
+  const chip = document.getElementById('role-chip');
+  const btnLogin = document.getElementById('btn-login');
+  const btnLogout = document.getElementById('btn-logout');
+  const tabAdmin = document.getElementById('tab-admin');
+  const tabProfile = document.getElementById('tab-profile');
+  if (!chip) return;
+  if (!currentUser) {
+    chip.textContent = 'Гость · демо-данные';
+    chip.dataset.role = 'guest';
+    btnLogin.style.display = '';
+    btnLogout.style.display = 'none';
+    tabAdmin.style.display = 'none';
+    tabProfile.style.display = 'none';
+    if (document.getElementById('view-admin').style.display !== 'none') switchTab('sim');
+    if (document.getElementById('view-profile').style.display !== 'none') switchTab('sim');
+  } else {
+    chip.textContent = currentUser.role_title + ' · ' + currentUser.full_name;
+    chip.dataset.role = currentUser.role;
+    btnLogin.style.display = 'none';
+    btnLogout.style.display = '';
+    tabProfile.style.display = '';
+    if (currentUser.role === 'admin') tabAdmin.style.display = '';
+  }
+}
+
+async function initAuth() {
+  if (token) {
+    try {
+      const me = await api('/api/auth/me');
+      if (me.role && me.role !== 'guest') currentUser = me;
+      else { token = null; localStorage.removeItem('rshb_token'); }
+    } catch (e) { token = null; localStorage.removeItem('rshb_token'); }
+  }
+  applyRole();
+  if (currentUser) loadProfile();
+}
+
+function openLogin() {
+  openModal(`
+    <h2>Вход в систему</h2>
+    <div class="desc">Три роли: гость работает без входа, пользователь — со своими данными, администратор — управляет сценариями.</div>
+    <div style="margin-top:var(--sp-4);display:grid;gap:var(--sp-3)">
+      <div>
+        <label for="m-login">Логин</label>
+        <input id="m-login" autocomplete="username" placeholder="demo или admin">
+      </div>
+      <div>
+        <label for="m-pass">Пароль</label>
+        <input id="m-pass" type="password" autocomplete="current-password" placeholder="demo">
+      </div>
+      <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap">
+        <button class="btn" onclick="doLogin()">Войти</button>
+        <button class="btn secondary" onclick="openRegister()">Регистрация</button>
+      </div>
+      <div class="desc" style="font-size:var(--fs-xs)">Демо-доступы: demo/demo — Пользователь, admin/admin — Администратор. Гостю пароль не нужен.</div>
+    </div>`);
+  setTimeout(() => document.getElementById('m-login').focus(), 50);
+}
+
 async function doLogin() {
-  const u = document.getElementById('login-user').value.trim();
-  const p = document.getElementById('login-pass').value;
+  const u = document.getElementById('m-login').value.trim();
+  const p = document.getElementById('m-pass').value;
+  if (!u || !p) { toast('Введите логин и пароль'); return; }
   try {
-    const r = await api('/api/life/login', {
+    const r = await api('/api/auth/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({username: u, password: p})
     });
     token = r.token;
     localStorage.setItem('rshb_token', token);
-    document.getElementById('who').textContent = r.user.full_name + (r.user.is_admin ? ' · админ' : '');
-    toast('Вход выполнен');
+    currentUser = r;
+    applyRole();
+    closeModal();
+    toast('Вход выполнен: ' + r.role_title + ' ' + r.full_name);
     loadLife();
+    loadProfile();
+    if (r.role === 'admin') loadAdminList();
   } catch (e) {
     toast('Ошибка входа: ' + e.message);
+  }
+}
+
+function openRegister() {
+  openModal(`
+    <h2>Регистрация</h2>
+    <div class="desc">Новый аккаунт получает роль «Пользователь»: свои расчёты, прогресс чек-листов и банковский контур.</div>
+    <div style="margin-top:var(--sp-4);display:grid;gap:var(--sp-3)">
+      <div><label for="r-name">Имя и фамилия</label><input id="r-name" placeholder="Иванов Иван"></div>
+      <div><label for="r-login">Логин (латиницей)</label><input id="r-login" autocomplete="username" placeholder="ivanov"></div>
+      <div><label for="r-pass">Пароль (от 4 символов)</label><input id="r-pass" type="password" autocomplete="new-password"></div>
+      <div style="display:flex;gap:var(--sp-2)">
+        <button class="btn" onclick="doRegister()">Создать аккаунт</button>
+        <button class="btn secondary" onclick="openLogin()">Назад ко входу</button>
+      </div>
+    </div>`);
+}
+
+async function doRegister() {
+  const name = document.getElementById('r-name').value.trim();
+  const u = document.getElementById('r-login').value.trim();
+  const p = document.getElementById('r-pass').value;
+  if (!u || !p) { toast('Заполните логин и пароль'); return; }
+  try {
+    const r = await api('/api/auth/register', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username: u, password: p, full_name: name || u})
+    });
+    token = r.token;
+    localStorage.setItem('rshb_token', token);
+    currentUser = r;
+    applyRole();
+    closeModal();
+    toast('Аккаунт создан: Пользователь ' + r.full_name);
+    loadLife();
+    loadProfile();
+  } catch (e) {
+    toast('Ошибка регистрации: ' + e.message);
+  }
+}
+
+async function doLogout() {
+  try { await api('/api/auth/logout', {method: 'POST'}); } catch (e) {}
+  token = null;
+  localStorage.removeItem('rshb_token');
+  currentUser = null;
+  applyRole();
+  toast('Вы вышли из системы');
+  loadLife();
+}
+
+// ================= PROFILE: личный кабинет =================
+let lkData = null;
+
+async function loadProfile() {
+  if (!currentUser) return;
+  try {
+    lkData = await api('/api/profile/summary');
+  } catch (e) {
+    document.getElementById('lk-nav').innerHTML =
+      '<div class="lk-empty-note">' + esc(e.message) + '</div>';
+    return;
+  }
+  renderProfile();
+}
+
+function renderProfile() {
+  const d = lkData;
+  document.getElementById('lk-name').textContent = d.user.full_name;
+  document.getElementById('lk-meta').innerHTML =
+    'Логин: ' + esc(d.user.username) + '<br>Роль: ' + esc(d.user.role_title) +
+    '<br>В системе с ' + d.user.created_at.slice(0, 10);
+
+  // Сводка: 4 цифры
+  const navDone = d.nav.reduce((a, n) => a + n.done, 0);
+  const navTotal = d.nav.reduce((a, n) => a + n.total, 0);
+  const routes = d.nav.filter(n => n.pct === 100).length;
+  document.getElementById('lk-stats').innerHTML = `
+    <div class="lk-stat"><div class="v">${navDone}<span style="font-size:.9rem;color:var(--ink-mute)"> / ${navTotal}</span></div><div class="l">пунктов выполнено</div></div>
+    <div class="lk-stat"><div class="v">${routes}<span style="font-size:.9rem;color:var(--ink-mute)"> / ${d.nav.length}</span></div><div class="l">маршрутов завершено</div></div>
+    <div class="lk-stat"><div class="v">${d.calculations.length}</div><div class="l">расчётов в истории</div></div>
+    <div class="lk-stat"><div class="v">${d.mortgages.length}</div><div class="l">ипотек в контуре</div></div>`;
+
+  // Итоговая плашка после «Завершить»
+  const note = sessionStorage.getItem('lk_finish_note');
+  const noteBox = document.getElementById('lk-finish-note');
+  if (note) {
+    try {
+      const n = JSON.parse(note);
+      noteBox.innerHTML = `<div class="lk-done-note">
+        <div class="t">Маршрут завершён: ${esc(n.title)}</div>
+        <div class="d">Выполнено ${n.done} из ${n.total} пунктов · ${n.pct}% — прогресс сохранён в кабинете выше. К маршруту можно вернуться в любой момент.</div>
+      </div>`;
+    } catch (e) {}
+    sessionStorage.removeItem('lk_finish_note');
+  } else noteBox.innerHTML = '';
+
+  // Прогресс по маршрутам
+  document.getElementById('lk-nav').innerHTML = d.nav.map(n => `
+    <div class="lk-nav-row">
+      <span class="name">${esc(n.title)}</span>
+      <span class="bar" aria-hidden="true"><i style="width:${n.pct}%"></i></span>
+      <span class="pct">${n.pct}%</span>
+      <span class="cnt" style="font-family:var(--mono);font-size:.7rem;color:var(--ink-mute)">${n.done}/${n.total}</span>
+      <button class="go" onclick="lkGoNav('${esc(n.scenario_key)}')">открыть →</button>
+    </div>`).join('') || '<div class="lk-empty-note">Маршруты пока не начаты</div>';
+
+  // Черновики расчётов
+  const simTitle = k => {
+    const s = simScenarios.find(x => x.key === k);
+    return s ? s.title : k;
+  };
+  document.getElementById('lk-calcs-list').innerHTML = d.calculations.length
+    ? d.calculations.map(c => {
+        const main = (c.results && c.results.results || []).filter(r => !r.hidden && r.value != null);
+        const hl = main.find(r => ['payment','saved_interest','month_saved','cashflow','dti','total_saved','new_balance','months_after','saved_interest'].includes(r.key)) || main[0];
+        const inp = Object.values(c.inputs || {})[0];
+        return `<div class="draft-row">
+          <span class="when">${c.created_at.replace('T', ' ')}</span>
+          <span class="what">${esc(simTitle(c.scenario_key))}</span>
+          ${hl ? `<span class="sum">${esc(hl.label)}: ${fmt(hl.value)}${hl.unit ? ' ' + esc(hl.unit) : ''}</span>` : ''}
+          <button class="open" onclick="lkOpenCalc(${c.id})">открыть →</button>
+          <button class="x" onclick="lkDelCalc(${c.id})" title="Удалить черновик">✕</button>
+        </div>`;
+      }).join('')
+    : '<div class="lk-empty-note">Расчётов пока нет — сделайте первый в разделе «Что, если…?»</div>';
+  document.getElementById('lk-clear').style.display = d.calculations.length ? '' : 'none';
+
+  // Ипотеки
+  document.getElementById('lk-mortgages').innerHTML = d.mortgages.length
+    ? d.mortgages.map(m => `
+      <div class="draft-row">
+        <span class="what">${esc(m.name)}</span>
+        <span class="sum">${fmt(m.remaining_debt)} ₽ остаток · ${m.rate}% · ${fmt(m.monthly_payment)} ₽/мес.</span>
+        <span class="when" style="margin-left:auto">${esc(m.object_address || '')}</span>
+      </div>`).join('')
+    : '<div class="lk-empty-note">Ипотек в контуре нет (демо-кредит создаётся у demo-аккаунта)</div>';
+
+  // Планы по сервисам
+  document.getElementById('lk-actions').innerHTML = d.actions.length
+    ? d.actions.map(a => `
+      <div class="draft-row">
+        <span class="when">${a.created_at.replace('T', ' ')}</span>
+        <span class="what">${esc(a.service_key)}</span>
+        <span class="sum">${esc(a.status)}</span>
+        <button class="x" onclick="lkDelAction(${a.id})" style="margin-left:auto">✕</button>
+      </div>`).join('')
+    : '<div class="lk-empty-note">Планов пока нет — запланируйте сервис в разделе «Жизнь после ипотеки»</div>';
+}
+
+function lkGoNav(key) {
+  switchTab('nav');
+  selectNav(key);
+}
+
+async function lkOpenCalc(id) {
+  const c = lkData && lkData.calculations.find(x => x.id === id);
+  if (!c) return;
+  switchTab('sim');
+  await selectSim(c.scenario_key);
+  // подставляем сохранённые входные значения черновика
+  Object.entries(c.inputs || {}).forEach(([k, v]) => {
+    const el = document.getElementById('p-' + k);
+    if (el && v != null) el.value = v;
+  });
+  runCalc();
+  document.getElementById('sim-work').scrollIntoView({behavior: 'smooth', block: 'start'});
+  toast('Черновик загружен — параметры восстановлены');
+}
+
+async function lkDelCalc(id) {
+  if (!confirm('Удалить этот расчёт из истории?')) return;
+  try {
+    await api('/api/profile/calculations/' + id, {method: 'DELETE'});
+    toast('Расчёт удалён');
+    loadProfile();
+  } catch (e) { toast('Ошибка: ' + e.message); }
+}
+
+async function lkClearCalcs() {
+  if (!confirm('Очистить всю историю расчётов?')) return;
+  try {
+    await api('/api/profile/calculations', {method: 'DELETE'});
+    toast('История очищена');
+    loadProfile();
+  } catch (e) { toast('Ошибка: ' + e.message); }
+}
+
+async function lkDelAction(id) {
+  try {
+    await api('/api/profile/actions/' + id, {method: 'DELETE'});
+    toast('План удалён');
+    loadProfile();
+  } catch (e) { toast('Ошибка: ' + e.message); }
+}
+
+// ================= ADMIN: сценарии, формулы, параметры, подсказки =================
+async function loadAdminList() {
+  const box = document.getElementById('admin-list');
+  if (!box) return;
+  try {
+    const list = await api('/api/sim/scenarios');
+    box.innerHTML = list.map(s => `
+      <div class="admin-row">
+        <div>
+          <strong>${esc(s.title)}</strong>
+          <div class="desc" style="font-size:var(--fs-xs)">key: ${esc(s.key)} · категория: ${esc(s.category)} · параметров: ${(s.params_schema || []).length} · подсказок: ${s.hints_count ?? 0}</div>
+        </div>
+        <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap">
+          <button class="btn secondary small" onclick="adminEditScenario('${esc(s.key)}')">Формулы и параметры</button>
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    box.innerHTML = '<div class="empty">' + esc(e.message) + '</div>';
+  }
+}
+
+function fieldRow(label, id, value, placeholder) {
+  return `<div><label for="${id}">${label}</label><input id="${id}" value="${esc(value ?? '')}" placeholder="${esc(placeholder ?? '')}"></div>`;
+}
+
+async function adminNewScenario() {
+  adminScenarioForm({
+    key: '', title: '', category: 'Прочее', description: '',
+    params_schema: [{key: 'sum', label: 'Сумма', unit: '₽', type: 'number', default: 1000000}],
+    formulas: [{key: 'result', label: 'Результат', expr: 'sum * 2', unit: '₽'}],
+    hints: []
+  }, true);
+}
+
+async function adminEditScenario(key) {
+  try {
+    const s = await api('/api/sim/scenarios/' + key);
+    adminScenarioForm(s, false);
+  } catch (e) { toast('Ошибка: ' + e.message); }
+}
+
+function adminScenarioForm(s, isNew) {
+  openModal(`
+    <h2>${isNew ? 'Новый сценарий' : 'Редактирование: ' + esc(s.title)}</h2>
+    <div class="desc" style="margin-bottom:var(--sp-3)">Параметры, формулы и подсказки — по одной строке JSON в каждом поле. Формулы считают по порядку и могут ссылаться на параметры и результаты предыдущих строк. Функции: annuity(сумма, ставка_в_мес, срок_мес), months_to_repay(сумма, платёж, ставка_в_мес).</div>
+    <div style="display:grid;gap:var(--sp-3)">
+      ${fieldRow('Ключ (латиницей, уникальный)', 'a-key', s.key)}
+      ${fieldRow('Название', 'a-title', s.title)}
+      ${fieldRow('Категория', 'a-cat', s.category)}
+      ${fieldRow('Описание', 'a-desc', s.description)}
+      <div>
+        <label for="a-params">Параметры (JSON-массив)</label>
+        <textarea id="a-params" rows="5">${esc(JSON.stringify(s.params_schema, null, 1))}</textarea>
+      </div>
+      <div>
+        <label for="a-formulas">Формулы (JSON-массив)</label>
+        <textarea id="a-formulas" rows="5">${esc(JSON.stringify(s.formulas, null, 1))}</textarea>
+      </div>
+      <div>
+        <label for="a-hints">Подсказки (JSON-массив, условие — необязательно)</label>
+        <textarea id="a-hints" rows="4">${esc(JSON.stringify(s.hints || [], null, 1))}</textarea>
+      </div>
+      <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap">
+        <button class="btn" onclick="adminSaveScenario(${isNew})">${isNew ? 'Создать' : 'Сохранить'}</button>
+        ${isNew ? '' : '<button class="btn danger" onclick="adminDeleteScenario()">Удалить</button>'}
+        <button class="btn secondary" onclick="closeModal()">Отмена</button>
+      </div>
+    </div>`);
+}
+
+async function adminSaveScenario(isNew) {
+  const val = id => document.getElementById(id).value;
+  let params, formulas, hints;
+  try {
+    params = JSON.parse(val('a-params'));
+    formulas = JSON.parse(val('a-formulas'));
+    hints = JSON.parse(val('a-hints'));
+  } catch (e) {
+    toast('Ошибка JSON: ' + e.message);
+    return;
+  }
+  const body = {
+    key: val('a-key').trim(), title: val('a-title').trim(),
+    category: val('a-cat').trim(), description: val('a-desc').trim(),
+    params_schema: params, formulas: formulas, hints: hints
+  };
+  if (!body.key || !body.title) { toast('Ключ и название обязательны'); return; }
+  try {
+    if (isNew) {
+      await api('/api/sim/admin/scenarios', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+    } else {
+      await api('/api/sim/admin/scenarios/' + encodeURIComponent(body.key), {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+    }
+    toast(isNew ? 'Сценарий создан — уже доступен пользователям' : 'Сохранено');
+    closeModal();
+    loadAdminList();
+    loadSim();
+  } catch (e) {
+    toast('Ошибка: ' + e.message);
+  }
+}
+
+async function adminDeleteScenario() {
+  const key = document.getElementById('a-key').value.trim();
+  if (!confirm('Удалить сценарий ' + key + '?')) return;
+  try {
+    await api('/api/sim/admin/scenarios/' + encodeURIComponent(key), {method: 'DELETE'});
+    toast('Сценарий удалён');
+    closeModal();
+    loadAdminList();
+    loadSim();
+  } catch (e) {
+    toast('Ошибка: ' + e.message);
   }
 }
 
@@ -795,7 +1340,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ================= INIT =================
-loadSim(); loadNav(); loadLife();
+initAuth().then(() => { loadSim(); loadNav(); loadLife(); });
 </script>
 </body>
 </html>

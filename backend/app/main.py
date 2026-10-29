@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import settings
 from .init_db import init_db
-from .routers import sim, nav, life
+from .routers import sim, nav, life, auth, profile
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,9 +26,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(sim.router)
 app.include_router(nav.router)
 app.include_router(life.router)
+app.include_router(profile.router)
 
 # Статика фронтенда: ищем frontend/ в нескольких возможных местах —
 # раскладка локальная (корень/backend/app) и в Docker (/app/app) различается

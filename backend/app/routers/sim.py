@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..finance import safe_eval, annuity_payment, months_to_repay
 from ..models import SimScenario, SimCalculation, User
+from .auth import get_current_user, require_user, require_admin
 
 router = APIRouter(prefix="/api/sim", tags=["simulator"])
 
@@ -108,7 +109,8 @@ def get_scenario(key: str, db: Session = Depends(get_db)):
 
 
 @router.post("/calc")
-def calc(req: CalcRequest, db: Session = Depends(get_db)):
+def calc(req: CalcRequest, db: Session = Depends(get_db),
+         user: User | None = Depends(get_current_user)):
     row = db.execute(
         select(SimScenario).where(SimScenario.key == req.scenario_key)
     ).scalar_one_or_none()
@@ -119,27 +121,34 @@ def calc(req: CalcRequest, db: Session = Depends(get_db)):
     for p in row.params_schema:
         inputs[p["key"]] = req.inputs.get(p["key"], p.get("default", 0))
     out = run_scenario(row, inputs)
-    # Сохраняем историю (анонимно)
-    db.add(SimCalculation(scenario_key=req.scenario_key,
-                          inputs=inputs, results=out))
-    db.commit()
+    # Изоляция расчётов: гостю результаты отдаются, но история
+    # не сохраняется; пользователь — история только своя
+    if user is not None:
+        db.add(SimCalculation(user_id=user.id, scenario_key=req.scenario_key,
+                              inputs=inputs, results=out))
+        db.commit()
     return out
 
 
 @router.get("/history")
-def history(limit: int = 20, db: Session = Depends(get_db)):
+def history(limit: int = 20, db: Session = Depends(get_db),
+            user: User = Depends(require_user)):
+    """История расчётов — изолирована: только собственные записи."""
     rows = db.execute(
-        select(SimCalculation).order_by(SimCalculation.id.desc()).limit(limit)
+        select(SimCalculation)
+        .where(SimCalculation.user_id == user.id)
+        .order_by(SimCalculation.id.desc()).limit(limit)
     ).scalars().all()
     return [{"id": r.id, "scenario_key": r.scenario_key,
              "created_at": r.created_at.isoformat()} for r in rows]
 
 
-# ---- Админ: создание/редактирование сценариев (без авторизации для демо,
-#      в продакшене защитить токеном) ----
+# ---- Администрирование: только роль «Администратор» (см. /api/auth) ----
 
 @router.post("/admin/scenarios")
-def create_scenario(data: ScenarioIn, db: Session = Depends(get_db)):
+def create_scenario(data: ScenarioIn,
+                    admin: User = Depends(require_admin),
+                    db: Session = Depends(get_db)):
     exists = db.execute(
         select(SimScenario).where(SimScenario.key == data.key)
     ).scalar_one_or_none()
@@ -157,7 +166,9 @@ def create_scenario(data: ScenarioIn, db: Session = Depends(get_db)):
 
 
 @router.put("/admin/scenarios/{key}")
-def update_scenario(key: str, data: ScenarioIn, db: Session = Depends(get_db)):
+def update_scenario(key: str, data: ScenarioIn,
+                    admin: User = Depends(require_admin),
+                    db: Session = Depends(get_db)):
     obj = db.execute(
         select(SimScenario).where(SimScenario.key == key)
     ).scalar_one_or_none()
@@ -174,7 +185,9 @@ def update_scenario(key: str, data: ScenarioIn, db: Session = Depends(get_db)):
 
 
 @router.delete("/admin/scenarios/{key}")
-def delete_scenario(key: str, db: Session = Depends(get_db)):
+def delete_scenario(key: str,
+                    admin: User = Depends(require_admin),
+                    db: Session = Depends(get_db)):
     obj = db.execute(
         select(SimScenario).where(SimScenario.key == key)
     ).scalar_one_or_none()

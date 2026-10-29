@@ -5,9 +5,14 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..database import get_db
-from ..models import NavScenario, NavProgress
+from ..models import NavScenario, NavProgress, User
+from .auth import get_current_user, require_user, require_admin
 
 router = APIRouter(prefix="/api/nav", tags=["navigator"])
+
+# Гость-сессия без входа: прогресс пишем под техническим user_id=0,
+# чтобы данные гостей не смешивались с записями реальных пользователей.
+GUEST_USER_ID = 0
 
 
 @router.get("/scenarios")
@@ -46,12 +51,15 @@ class ProgressIn(BaseModel):
 
 
 @router.post("/progress")
-def set_progress(p: ProgressIn, user_id: int = 1, db: Session = Depends(get_db)):
-    """Демо-режим: прогресс пишется для user_id=1 (гость).
-    В ЛК — под токен авторизованного пользователя."""
+def set_progress(p: ProgressIn,
+                 db: Session = Depends(get_db),
+                 user: User | None = Depends(get_current_user)):
+    """Прогресс изолирован: гость — под user_id=0 (гостевая сессия),
+    авторизованный — под своим аккаунтом."""
+    uid = user.id if user else GUEST_USER_ID
     obj = db.execute(
         select(NavProgress).where(
-            NavProgress.user_id == user_id,
+            NavProgress.user_id == uid,
             NavProgress.scenario_key == p.scenario_key,
             NavProgress.step_key == p.step_key,
             NavProgress.item_index == p.item_index,
@@ -60,7 +68,7 @@ def set_progress(p: ProgressIn, user_id: int = 1, db: Session = Depends(get_db))
     if obj:
         obj.done = p.done
     else:
-        obj = NavProgress(user_id=user_id, scenario_key=p.scenario_key,
+        obj = NavProgress(user_id=uid, scenario_key=p.scenario_key,
                           step_key=p.step_key, item_index=p.item_index,
                           done=p.done)
         db.add(obj)
@@ -69,11 +77,13 @@ def set_progress(p: ProgressIn, user_id: int = 1, db: Session = Depends(get_db))
 
 
 @router.get("/progress/{scenario_key}")
-def get_progress(scenario_key: str, user_id: int = 1,
-                 db: Session = Depends(get_db)):
+def get_progress(scenario_key: str,
+                 db: Session = Depends(get_db),
+                 user: User | None = Depends(get_current_user)):
+    uid = user.id if user else GUEST_USER_ID
     rows = db.execute(
         select(NavProgress).where(
-            NavProgress.user_id == user_id,
+            NavProgress.user_id == uid,
             NavProgress.scenario_key == scenario_key,
         )
     ).scalars().all()
@@ -82,11 +92,13 @@ def get_progress(scenario_key: str, user_id: int = 1,
 
 
 @router.post("/progress/{scenario_key}/reset")
-def reset_progress(scenario_key: str, user_id: int = 1,
-                   db: Session = Depends(get_db)):
+def reset_progress(scenario_key: str,
+                   db: Session = Depends(get_db),
+                   user: User | None = Depends(get_current_user)):
+    uid = user.id if user else GUEST_USER_ID
     rows = db.execute(
         select(NavProgress).where(
-            NavProgress.user_id == user_id,
+            NavProgress.user_id == uid,
             NavProgress.scenario_key == scenario_key,
         )
     ).scalars().all()
@@ -96,7 +108,7 @@ def reset_progress(scenario_key: str, user_id: int = 1,
     return {"ok": True}
 
 
-# ---- Админ: управление сценариями навигатора ----
+# ---- Администрирование: только роль «Администратор» ----
 
 class NavScenarioIn(BaseModel):
     key: str
@@ -110,7 +122,9 @@ class NavScenarioIn(BaseModel):
 
 
 @router.post("/admin/scenarios")
-def create_scenario(data: NavScenarioIn, db: Session = Depends(get_db)):
+def create_scenario(data: NavScenarioIn,
+                    admin: User = Depends(require_admin),
+                    db: Session = Depends(get_db)):
     exists = db.execute(
         select(NavScenario).where(NavScenario.key == data.key)
     ).scalar_one_or_none()
@@ -123,7 +137,9 @@ def create_scenario(data: NavScenarioIn, db: Session = Depends(get_db)):
 
 
 @router.put("/admin/scenarios/{key}")
-def update_scenario(key: str, data: NavScenarioIn, db: Session = Depends(get_db)):
+def update_scenario(key: str, data: NavScenarioIn,
+                    admin: User = Depends(require_admin),
+                    db: Session = Depends(get_db)):
     obj = db.execute(
         select(NavScenario).where(NavScenario.key == key)
     ).scalar_one_or_none()
